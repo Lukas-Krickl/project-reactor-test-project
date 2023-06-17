@@ -1,0 +1,17 @@
+server:
+  port: 8081
+management:
+  endpoints.web.exposure.include: health, prometheus
+
+spring:
+  webflux:
+    problemdetails:
+      enabled: true
+  application:
+    name: CarService
+logging.level.root: INFO
+application:
+  car-repository:
+    work-factor: 0ns
+    mock-generator:
+      amount-of-cars: 1000

@@ -1,0 +1,22 @@
+server.port: 8080
+management:
+  endpoints.web.exposure.include: health, prometheus
+
+spring:
+  webflux:
+    problemdetails:
+      enabled: true
+  application:
+    name: ClusteringService
+
+logging.level.root: INFO
+
+application:
+  clustering:
+    min-points: 2
+    eps: 2000
+  clients:
+    car-service:
+      base-url: http://localhost:8081
+
+

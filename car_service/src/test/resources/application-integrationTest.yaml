@@ -1,0 +1,5 @@
+application:
+  car-repository:
+    work-factor: 0ns
+    mock-generator:
+      amount-of-cars: 20

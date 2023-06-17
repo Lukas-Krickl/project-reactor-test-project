@@ -1,0 +1,40 @@
+plugins {
+  id 'java'
+  id 'org.springframework.boot' version '3.1.0'
+  id 'io.spring.dependency-management' version '1.1.0'
+  id 'io.freefair.lombok' version "8.0.1"
+}
+
+group = 'io.lukas_krickl'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+  implementation 'io.projectreactor:reactor-core-micrometer:1.0.6'
+  // https://mvnrepository.com/artifact/com.github.loki4j/loki-logback-appender
+  implementation group: 'com.github.loki4j', name: 'loki-logback-appender', version: '1.4.1'
+  // https://mvnrepository.com/artifact/io.micrometer/micrometer-tracing-bridge-brave
+  implementation group: 'io.micrometer', name: 'micrometer-tracing-bridge-brave', version: '1.1.2'
+
+  implementation 'org.springframework.boot:spring-boot-starter-webflux'
+  implementation 'org.springframework.boot:spring-boot-starter-actuator'
+  implementation 'org.springframework.boot:spring-boot-starter-validation'
+  implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
+  testImplementation 'org.springframework.boot:spring-boot-starter-test'
+  testImplementation 'io.projectreactor:reactor-test'
+}
+
+tasks.named('test') {
+  useJUnitPlatform()
+}

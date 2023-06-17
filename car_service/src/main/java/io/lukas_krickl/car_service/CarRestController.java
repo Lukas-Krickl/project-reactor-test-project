@@ -21,12 +21,11 @@ public class CarRestController {
   private final CarService service;
 
   public Mono<ServerResponse> getCars(ServerRequest request) {
-    var radialSearchQuery = parseRadialSearchQuery(request.queryParam("center"), request.queryParam("radius"));
-    var response = radialSearchQuery.isPresent() ?
-      service.getCarsWithinCenterAndRadius(radialSearchQuery.get())
-      : service.getCars();
-    return ServerResponse.ok()
-      .body(response, Car.class);
+    return parseRadialSearchQuery(request.queryParam("center"), request.queryParam("radius"))
+      .map(service::getCarsWithinCenterAndRadius)
+      .orElse(service.getCars())
+      .transform(resp -> ServerResponse.ok().body(resp, Car.class))
+      .single();
   }
 
   private Optional<Circle> parseRadialSearchQuery(Optional<String> centerQuery, Optional<String> radiusQuery) {

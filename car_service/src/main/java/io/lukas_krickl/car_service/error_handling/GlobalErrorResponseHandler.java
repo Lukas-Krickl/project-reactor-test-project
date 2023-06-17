@@ -17,6 +17,9 @@ import org.springframework.web.ErrorResponseException;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 @Component
 @Order(-2)
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class GlobalErrorResponseHandler implements ErrorWebExceptionHandler {
 
   @Override
   public @NotNull Mono<Void> handle(ServerWebExchange serverWebExchange, @NotNull Throwable throwable) {
+    log.error(throwable.getMessage(), suppressUnhelpfulReactorStacktrace(throwable));
     DataBufferFactory bufferFactory = serverWebExchange.getResponse().bufferFactory();
     ErrorResponse errorResponse;
 
@@ -49,5 +53,26 @@ public class GlobalErrorResponseHandler implements ErrorWebExceptionHandler {
 
   private ErrorResponse handleException(Throwable ex) {
     return new ErrorResponseException(HttpStatusCode.valueOf(500), ex);
+  }
+
+  private Throwable suppressUnhelpfulReactorStacktrace(Throwable t) {
+    if (t.getSuppressed() != null) {
+      for (Throwable suppressed : t.getSuppressed()) {
+        var newStackTrace = new ArrayList<StackTraceElement>(
+          Arrays.stream(suppressed.getStackTrace())
+            .limit(25)
+            .toList()
+        );
+        newStackTrace.add(new StackTraceElement("Skipped remaining reactor stack trace", "", "", 0));
+        newStackTrace.addAll(
+          Arrays.stream(suppressed.getStackTrace())
+            .skip(25)
+            .filter(stackTraceElement -> !stackTraceElement.getClassName().contains("reactor") && !stackTraceElement.getClassName().contains("netty"))
+            .toList()
+        );
+        suppressed.setStackTrace(newStackTrace.toArray(StackTraceElement[]::new));
+      }
+    }
+    return t;
   }
 }

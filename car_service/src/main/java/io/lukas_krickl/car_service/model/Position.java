@@ -3,7 +3,7 @@ package io.lukas_krickl.car_service.model;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-public record Position(double lat, double lon) {
+public record Position(Double lat, Double lon) {
   static final Pattern COORDINATES_FORMAT = Pattern.compile("^-?\\d{1,2}\\.\\d{1,10}, *-?\\d{1,2}\\.\\d{1,10}");
 
   public static Position of(String s) {

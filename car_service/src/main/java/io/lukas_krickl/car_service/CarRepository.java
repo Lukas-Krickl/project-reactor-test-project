@@ -2,16 +2,21 @@ package io.lukas_krickl.car_service;
 
 import io.lukas_krickl.car_service.model.*;
 import io.lukas_krickl.car_service.configuration.CarRepositoryConfiguration;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.Level;
 
 @Component
+@Slf4j
 class CarRepository {
   private final Random rand = new Random();
   private final CarRepositoryConfiguration config;
@@ -26,14 +31,20 @@ class CarRepository {
     }
   }
 
-  public Flux<Car> getCars(){
-    return Flux.fromIterable(dataStore.values())
-      .delayElements(config.getWorkFactor());
+  public Flux<Car> getCars() {
+    var sink = Sinks.many().replay().<Car>all();
+    Flux.fromIterable(dataStore.values())
+      .delayElements(config.getWorkFactor())
+      .doFinally(s -> sink.tryEmitComplete())
+      .subscribeOn(Schedulers.boundedElastic())
+      .subscribe(sink::tryEmitNext);
+    return sink.asFlux();
   }
 
   public Mono<Car> getCarById(String id) {
     return Mono.justOrEmpty(dataStore.get(id))
-      .delayElement(config.getWorkFactor());
+      .delayElement(config.getWorkFactor())
+      .log("get car by id", Level.INFO, true);
   }
 
   private Car generateMockCar(String id) {
@@ -49,7 +60,7 @@ class CarRepository {
   }
 
   private Position getRandomPosition() {
-    return new Position(48.0 + rand.nextFloat(), 16.0 + rand.nextFloat());
+    return new Position(48.0 + rand.nextFloat(), null);// //FIXME 16.0 + rand.nextFloat());
   }
 
   private String getRandomModelName() {

@@ -25,7 +25,9 @@ public class CarClusteringService {
   public Flux<Car> getCars() {
     return webClient.get()
       .uri(uriBuilder -> uriBuilder.path("/cars").build())
-      .exchangeToFlux(clientResponse -> clientResponse.bodyToFlux(Car.class));
+      .exchangeToFlux(clientResponse -> !clientResponse.statusCode().is2xxSuccessful() ?
+        clientResponse.<Car>createError().flux()
+        : clientResponse.bodyToFlux(Car.class));
   }
 
   public Mono<Car> getCar(String id) {

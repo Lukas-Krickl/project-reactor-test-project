@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.Level;
 
 @Component
 @Slf4j
@@ -43,8 +42,7 @@ class CarRepository {
 
   public Mono<Car> getCarById(String id) {
     return Mono.justOrEmpty(dataStore.get(id))
-      .delayElement(config.getWorkFactor())
-      .log("get car by id", Level.INFO, true);
+      .delayElement(config.getWorkFactor());
   }
 
   private Car generateMockCar(String id) {

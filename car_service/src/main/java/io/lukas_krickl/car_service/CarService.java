@@ -17,9 +17,7 @@ public class CarService {
   private final CarRepository carRepository;
 
   public Flux<Car> getCars() {
-    return carRepository.getCars()
-      .filter(car -> false)
-      .log("get all cars from service");
+    return carRepository.getCars();
   }
 
   public Flux<Car> getCarsWithinCenterAndRadius(Circle radialFilter) {

@@ -11,6 +11,11 @@ spring:
     name: CarService
 logging.level.root: INFO
 application:
+  include-error-causing-element:
+    enabled: true
+    included-classes:
+      - io.lukas_krickl.car_service.model.Car
+
   car-repository:
     work-factor: 0ns
     mock-generator:

@@ -29,7 +29,14 @@ public class GlobalErrorResponseHandler implements ErrorWebExceptionHandler {
 
   @Override
   public @NotNull Mono<Void> handle(ServerWebExchange serverWebExchange, @NotNull Throwable throwable) {
-    log.error(throwable.getMessage(), suppressUnhelpfulReactorStacktrace(throwable));
+    log.error(
+      "Error: {}, caused by request: {} {} headers {}",
+      throwable.getMessage(),
+      serverWebExchange.getRequest().getMethod(),
+      serverWebExchange.getRequest().getURI(),
+      serverWebExchange.getRequest().getHeaders(),
+      suppressUnhelpfulReactorStacktrace(throwable)
+    );
     DataBufferFactory bufferFactory = serverWebExchange.getResponse().bufferFactory();
     ErrorResponse errorResponse;
 

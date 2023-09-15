@@ -1,8 +1,7 @@
-package io.lukas_krickl.clustering_service.configuration;
+package io.lukas_krickl.car_service.configuration;
 
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.ObservationTextPublisher;
-import io.micrometer.observation.aop.ObservedAspect;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -26,10 +25,5 @@ public class TracingConfiguration {
   @Bean
   ObservationTextPublisher textPublisher() {
     return new ObservationTextPublisher(log::info);
-  }
-
-  @Bean
-  public ObservedAspect observedAspect(ObservationRegistry observationRegistry) {
-    return new ObservedAspect(observationRegistry);
   }
 }

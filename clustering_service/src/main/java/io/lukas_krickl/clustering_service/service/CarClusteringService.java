@@ -2,6 +2,7 @@ package io.lukas_krickl.clustering_service.service;
 
 import io.lukas_krickl.clustering_service.model.ClusterableCar;
 import io.lukas_krickl.clustering_service.model.car_service_response.Car;
+import io.micrometer.observation.annotation.Observed;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.Clusterer;
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+
+import java.util.List;
+import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +23,12 @@ public class CarClusteringService {
   public Flux<Cluster<ClusterableCar>> getCarClusters() {
     return requestAllCars().map(Mapper::mapToClusterableCar)
       .collectList()
-      .flatMapIterable(clusterer::cluster);
+      .flatMapIterable(this::clusterCars);
+  }
+
+  @Observed(name = "cluster.cars")
+  private List<? extends Cluster<ClusterableCar>> clusterCars(List<ClusterableCar> cars) {
+    return clusterer.cluster(cars);
   }
 
   public Flux<Car> getCars() {

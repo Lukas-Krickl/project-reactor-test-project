@@ -1,9 +1,11 @@
 package io.lukas_krickl.car_service;
 
-import io.lukas_krickl.car_service.model.*;
 import io.lukas_krickl.car_service.configuration.CarRepositoryConfiguration;
+import io.lukas_krickl.car_service.model.*;
+import io.micrometer.observation.ObservationRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import reactor.core.observability.micrometer.Micrometer;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
@@ -17,13 +19,15 @@ import java.util.Random;
 @Component
 @Slf4j
 class CarRepository {
+  private final ObservationRegistry observationRegistry;
   private final Random rand = new Random();
   private final CarRepositoryConfiguration config;
   private final Map<String, Car> dataStore;
 
-  public CarRepository(CarRepositoryConfiguration config) {
+  public CarRepository(CarRepositoryConfiguration config, ObservationRegistry observationRegistry) {
     this.config = config;
     this.dataStore = new HashMap<>(config.getMockGenerator().getAmountOfCars());
+    this.observationRegistry = observationRegistry;
     for (int i = 0; i < config.getMockGenerator().getAmountOfCars(); i++) {
       String carId = Integer.toString(i);
       dataStore.put(carId, generateMockCar(carId));
@@ -37,12 +41,18 @@ class CarRepository {
       .doFinally(s -> sink.tryEmitComplete())
       .subscribeOn(Schedulers.boundedElastic())
       .subscribe(sink::tryEmitNext);
-    return sink.asFlux();
+    return sink.asFlux()
+      .name("car_repository")
+      .tag("query", "getAllCars")
+      .tap(Micrometer.observation(observationRegistry));
   }
 
   public Mono<Car> getCarById(String id) {
     return Mono.justOrEmpty(dataStore.get(id))
-      .delayElement(config.getWorkFactor());
+      .delayElement(config.getWorkFactor())
+      .name("car_repository")
+      .tag("query", "getCarById")
+      .tap(Micrometer.observation(observationRegistry));
   }
 
   private Car generateMockCar(String id) {
@@ -58,7 +68,7 @@ class CarRepository {
   }
 
   private Position getRandomPosition() {
-    return new Position(48.0 + rand.nextFloat(), null);// //FIXME 16.0 + rand.nextFloat());
+    return new Position(48.0 + rand.nextFloat(), 16.0 + rand.nextFloat());
   }
 
   private String getRandomModelName() {

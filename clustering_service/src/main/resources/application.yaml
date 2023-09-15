@@ -1,6 +1,9 @@
 server.port: 8080
 management:
   endpoints.web.exposure.include: health, prometheus
+  tracing:
+    enabled: true
+    sampling.probability: 1.0
 
 spring:
   webflux:

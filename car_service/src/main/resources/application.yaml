@@ -2,6 +2,9 @@ server:
   port: 8081
 management:
   endpoints.web.exposure.include: health, prometheus
+  tracing:
+    enabled: true
+    sampling.probability: 1.0
 
 spring:
   webflux:
@@ -17,6 +20,6 @@ application:
       - io.lukas_krickl.car_service.model.Car
 
   car-repository:
-    work-factor: 0ns
+    work-factor: 100ns
     mock-generator:
       amount-of-cars: 1000

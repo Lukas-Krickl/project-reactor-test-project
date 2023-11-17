@@ -1,9 +1,12 @@
 server:
   port: 8081
+  http2.enabled: true
+  compression.enabled: true
+  netty.h2c-max-content-length: 1MB
 management:
   endpoints.web.exposure.include: health, prometheus
   tracing:
-    enabled: true
+    enabled: false
     sampling.probability: 1.0
 
 spring:
@@ -12,7 +15,7 @@ spring:
       enabled: true
   application:
     name: CarService
-logging.level.root: INFO
+logging.level.root: TRACE
 application:
   include-error-causing-element:
     enabled: true

@@ -20,9 +20,9 @@ dependencies {
   implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
   implementation group: 'io.projectreactor', name: 'reactor-core-micrometer', version: '1.0.9'
   //metrics
-  implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.11.4'
+  //implementation group: 'io.micrometer', name: 'micrometer-registry-prometheus', version: '1.11.4'
   //logging
-  implementation group: 'com.github.loki4j', name: 'loki-logback-appender', version: '1.4.1'
+  //implementation group: 'com.github.loki4j', name: 'loki-logback-appender', version: '1.4.1'
   //tracing
   implementation platform('io.micrometer:micrometer-tracing-bom:latest.release')
   implementation 'io.micrometer:micrometer-tracing'

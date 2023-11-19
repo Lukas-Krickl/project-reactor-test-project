@@ -1,8 +1,10 @@
-server.port: 8080
+server:
+  port: 8080
+  http2.enabled: true
 management:
   endpoints.web.exposure.include: health, prometheus
   tracing:
-    enabled: true
+    enabled: false
     sampling.probability: 1.0
 
 spring:
@@ -12,7 +14,12 @@ spring:
   application:
     name: ClusteringService
 
-logging.level.root: INFO
+logging.level:
+  root: debug
+  reactor.netty.http.client.HttpClientOperations: trace
+  reactor.netty.http.server.HttpServerOperations: trace
+  reactor.netty.http.client.h2: debug
+  reactor.netty.http.server.h2: debug
 
 application:
   clustering:

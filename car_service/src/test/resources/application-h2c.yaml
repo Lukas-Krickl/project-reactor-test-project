@@ -1,0 +1,9 @@
+server:
+  ssl:
+    enable: false
+application:
+  include-error-causing-element.enabled: true
+  car-repository:
+    work-factor: 20ms
+    mock-generator:
+      amount-of-cars: 20

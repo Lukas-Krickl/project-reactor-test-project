@@ -1,8 +1,14 @@
 server:
   port: 8081
   http2.enabled: true
-  compression.enabled: true
-  netty.h2c-max-content-length: 1MB
+  ssl:
+    enable: true
+    key-store-type: PKCS12
+    key-store: classpath:keystore.p12
+    key-store-password: changeit
+    enabled-protocols: TLSv1.3
+
+
 management:
   endpoints.web.exposure.include: health, prometheus
   tracing:
@@ -15,7 +21,14 @@ spring:
       enabled: true
   application:
     name: CarService
-logging.level.root: TRACE
+logging.level:
+  root: INFO
+  reactor.netty.http.client.HttpClientOperations: debug
+  reactor.netty.http.server.HttpServerOperations: debug
+  #reactor.netty.http.client.h2: debug
+  #reactor.netty.http.server.h2: debug
+  reactor.netty.http.server.AccessLog: INFO
+
 application:
   include-error-causing-element:
     enabled: true

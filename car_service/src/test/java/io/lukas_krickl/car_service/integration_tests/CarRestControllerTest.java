@@ -54,16 +54,16 @@ class CarRestControllerTest {
 
     //then
     assertNotNull(actualCar);
-    assertNotNull(actualCar.id());
-    assertEquals("1", actualCar.id());
-    assertNotNull(actualCar.model());
-    assertNotNull(actualCar.fuelType());
-    assertNotNull(actualCar.plate());
-    var position = actualCar.position();
+    assertNotNull(actualCar.getId());
+    assertEquals("1", actualCar.getId());
+    assertNotNull(actualCar.getModel());
+    assertNotNull(actualCar.getFuelType());
+    assertNotNull(actualCar.getPlate());
+    var position = actualCar.getPosition();
     assertNotNull(position);
     assertNotNull(position.lat());
     assertNotNull(position.lon());
-    assertNotNull(actualCar.propulsionType());
-    assertNotNull(actualCar.transmission());
+    assertNotNull(actualCar.getPropulsionType());
+    assertNotNull(actualCar.getTransmission());
   }
 }

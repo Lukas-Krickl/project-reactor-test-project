@@ -29,7 +29,7 @@ public class CarService {
   }
 
   private CarAndDistance calculateDistance(Car car, Position requestedPosition) {
-    return new CarAndDistance(car, GeoUtils.getDistanceInMeters(car.position(), requestedPosition));
+    return new CarAndDistance(car, GeoUtils.getDistanceInMeters(car.getPosition(), requestedPosition));
   }
 
   public Mono<Car> getCar(String id) {

@@ -36,13 +36,13 @@ class RadialSearchTests {
     //when && then
     Consumer<Car> assertCarPropertiesNotNull = actualCar -> {
       assertNotNull(actualCar);
-      assertNotNull(actualCar.id());
-      assertNotNull(actualCar.model());
-      assertNotNull(actualCar.fuelType());
-      assertNotNull(actualCar.plate());
-      assertNotNull(actualCar.position());
-      assertNotNull(actualCar.propulsionType());
-      assertNotNull(actualCar.transmission());
+      assertNotNull(actualCar.getId());
+      assertNotNull(actualCar.getModel());
+      assertNotNull(actualCar.getFuelType());
+      assertNotNull(actualCar.getPlate());
+      assertNotNull(actualCar.getPosition());
+      assertNotNull(actualCar.getPropulsionType());
+      assertNotNull(actualCar.getTransmission());
     };
 
     webTestClient.get()

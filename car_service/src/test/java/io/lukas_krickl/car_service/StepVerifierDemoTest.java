@@ -8,35 +8,31 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import reactor.core.Fuseable;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class StepVerifierDemonstrationTest {
-  private CarRepositoryConfiguration carRepositoryConfiguration;
+class StepVerifierDemoTest {
   private CarRepository carRepository;
+  private Map<String, Car> dataStore;
 
   @BeforeEach
   void setUp() {
-    carRepositoryConfiguration = new CarRepositoryConfiguration();
-    carRepository = new CarRepository(carRepositoryConfiguration, Mockito.mock(ObservationRegistry.class));
+    dataStore = new HashMap<>();
+    CarRepositoryConfiguration carRepositoryConfiguration = new CarRepositoryConfiguration();
+    carRepository = new CarRepository(carRepositoryConfiguration, dataStore, Mockito.mock(ObservationRegistry.class));
   }
 
   @Test
   void expectNextElement() {
     //given
-    Car car = new Car(
-      "1",
-      new Position(46.123, 15.123),
-      "Reliant Robin",
-      PropulsionType.COMBUSTION,
-      FuelType.GASOLINE,
-      Transmission.MANUAL,
-      "H-1234"
-    );
+    Car car = getExampleCar();
 
     //when
     Mono.just(car)
@@ -49,24 +45,35 @@ class StepVerifierDemonstrationTest {
   @Test
   void expectNextElements() {
     //given
+    Flux<String> exampleElements = Flux.fromIterable(List.of("a", "b", "c"));
 
     //when
-    Mono.just(List.of("a", "b", "c"))
-      .as(StepVerifier::create)
-      //then
+    exampleElements.as(StepVerifier::create)
+      .expectNext("a")
+      .expectNext("b")
+      .expectNext("c")
+      .verifyComplete();
+
+    //or
+    exampleElements.as(StepVerifier::create)
+      .expectNext("a", "b", "c")
       .verifyComplete();
   }
 
   @Test
   @DisplayName("When a car is requested by its id, the correct car with the requested id is returned")
   void assertNextElements() {
+    //given
+    var testCar = getExampleCar();
+    dataStore.put(testCar.getId(), testCar);
+
     //when
-    carRepository.getCarById("1")
+    carRepository.getCarById(testCar.getId())
       .as(StepVerifier::create)
       //then
       .assertNext(car -> {
         assertThat(car).isNotNull();
-        assertThat(car.getId()).isEqualTo("1");
+        assertThat(car.getId()).isEqualTo(testCar.getId());
       });
   }
 
@@ -80,5 +87,18 @@ class StepVerifierDemonstrationTest {
       .expectFusion(Fuseable.SYNC)
       .expectNextCount(1)
       .verifyComplete();
+  }
+
+  private static Car getExampleCar() {
+    return new Car(
+      "1",
+      new Position(46.123, 15.123),
+      "Reliant Robin",
+      PropulsionType.COMBUSTION,
+      FuelType.GASOLINE,
+      Transmission.MANUAL,
+      "H-1234",
+      Car.Status.UNKNOWN
+    );
   }
 }

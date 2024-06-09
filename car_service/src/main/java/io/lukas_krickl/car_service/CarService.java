@@ -1,6 +1,8 @@
 package io.lukas_krickl.car_service;
 
-import io.lukas_krickl.car_service.model.*;
+import io.lukas_krickl.car_service.model.Car;
+import io.lukas_krickl.car_service.model.Circle;
+import io.lukas_krickl.car_service.model.Position;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,10 @@
 package io.lukas_krickl.car_service;
 
 import io.lukas_krickl.car_service.configuration.CarRepositoryConfiguration;
-import io.lukas_krickl.car_service.model.*;
+import io.lukas_krickl.car_service.model.Car;
 import io.micrometer.observation.ObservationRegistry;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import reactor.core.observability.micrometer.Micrometer;
 import reactor.core.publisher.Flux;
@@ -11,27 +12,19 @@ import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 @Component
 @Slf4j
-class CarRepository {
+public class CarRepository {
   private final ObservationRegistry observationRegistry;
-  private final Random rand = new Random();
   private final CarRepositoryConfiguration config;
   private final Map<String, Car> dataStore;
 
-  public CarRepository(CarRepositoryConfiguration config, ObservationRegistry observationRegistry) {
+  public CarRepository(CarRepositoryConfiguration config, @Qualifier("MockCarRepoDataSource") Map<String, Car> dataStore, ObservationRegistry observationRegistry) {
     this.config = config;
-    this.dataStore = new HashMap<>(config.getMockGenerator().getAmountOfCars());
+    this.dataStore = dataStore;
     this.observationRegistry = observationRegistry;
-    for (int i = 0; i < config.getMockGenerator().getAmountOfCars(); i++) {
-      String carId = Integer.toString(i);
-      dataStore.put(carId, generateMockCar(carId));
-    }
   }
 
   public Flux<Car> getCars() {
@@ -53,42 +46,5 @@ class CarRepository {
       .name("car_repository")
       .tag("query", "getCarById")
       .tap(Micrometer.observation(observationRegistry));
-  }
-
-  private Car generateMockCar(String id) {
-    return Car.builder()
-      .id(id)
-      .position(getRandomPosition())
-      .model(getRandomModelName())
-      .propulsionType(getRandomPropulsionType())
-      .fuelType(getRandomFuelType())
-      .transmission(getRandomTransmission())
-      .plate(getRandomPlate())
-      .build();
-  }
-
-  private Position getRandomPosition() {
-    return new Position(48.0 + rand.nextFloat(), 16.0 + rand.nextFloat());
-  }
-
-  private String getRandomModelName() {
-    List<String> modelNames = config.getMockGenerator().getModelNames();
-    return modelNames.get(rand.nextInt(0, modelNames.size()));
-  }
-
-  private PropulsionType getRandomPropulsionType() {
-    return PropulsionType.values()[rand.nextInt(0, PropulsionType.values().length)];
-  }
-
-  private FuelType getRandomFuelType() {
-    return FuelType.values()[rand.nextInt(0, FuelType.values().length)];
-  }
-
-  private Transmission getRandomTransmission() {
-    return Transmission.values()[rand.nextInt(0, Transmission.values().length)];
-  }
-
-  private String getRandomPlate() {
-    return "W " + rand.nextInt(1000, 99999);
   }
 }

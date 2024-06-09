@@ -4,12 +4,14 @@ import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.ObservationTextPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationRegistryCustomizer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.reactive.observation.ServerRequestObservationContext;
 
 @Configuration
 @Slf4j
+@ConditionalOnProperty(value = "management.tracing.enabled", havingValue = "true")
 public class TracingConfiguration {
   @Bean
   ObservationRegistryCustomizer<ObservationRegistry> ignoreActuatorEndpointTraces() {

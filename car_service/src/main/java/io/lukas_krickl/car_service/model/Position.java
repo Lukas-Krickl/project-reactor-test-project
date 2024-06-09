@@ -8,7 +8,7 @@ public record Position(Double lat, Double lon) {
 
   public static Position of(String s) {
     if (!COORDINATES_FORMAT.matcher(s).matches()) {
-      throw new IllegalArgumentException("Position does not match required format:'"+ COORDINATES_FORMAT.pattern() +"'");
+      throw new IllegalArgumentException("Position does not match required format:'" + COORDINATES_FORMAT.pattern() + "'");
     }
     var coordinates = Arrays.stream(s.split(","))
       .map(String::strip)

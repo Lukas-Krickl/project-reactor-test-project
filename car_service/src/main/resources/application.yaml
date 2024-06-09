@@ -1,10 +1,5 @@
 server:
   port: 8081
-management:
-  endpoints.web.exposure.include: health, prometheus
-  tracing:
-    enabled: true
-    sampling.probability: 1.0
 
 spring:
   webflux:
@@ -12,7 +7,10 @@ spring:
       enabled: true
   application:
     name: CarService
-logging.level.root: INFO
+logging:
+  level:
+    root: INFO
+
 application:
   include-error-causing-element:
     enabled: true
